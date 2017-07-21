@@ -1,0 +1,352 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:f="http://java.sun.com/jsf/core"
+              xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Ranking</title>
+    </h:head>
+
+    <f:subview id="header">
+        <ui:include src="templates/header.xhtml"/>
+        <f:event type="preRenderView" listener="#{bolaoController.loadPaginaRanking}"/>
+    </f:subview>
+    
+    <h:body>
+        <div class="container">
+            <h:form id="form_ranking">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h:messages id="message_ranking" showDetail="true" class="alert #{mensagemFlash.ALERT}">
+                            <f:passThroughAttribute name="role" value="alert" />
+                        </h:messages>
+                    </div>
+                </div>
+
+                <h:panelGroup layout="block" rendered="#{bolaoController.listaGrupoUsuario.size() eq 0}" styleClass="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <h4>Você ainda não tem nenhum grupo</h4>
+                        <h:commandLink value="Criar meu primeiro grupo AGORA!" action="#{usuarioController.criarGrupo()}" styleClass="btn btn-success btn-block"/>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" rendered="#{bolaoController.listaGrupoUsuario.size() ne 0 and bolaoController.grupoUsuarioSelecionado.id eq -1}" styleClass="row">
+                    <div class="col-xs-12">
+                        <h4>Selecione um Grupo</h4>
+                    </div>
+                    <ui:repeat value="#{bolaoController.listaGrupoUsuario}" var="linha_grupo_usuariox">
+                        <h:panelGroup layout="block" styleClass="col-xs-12 col-sm-4">
+                            <h:commandLink value="#{linha_grupo_usuariox.grupo.nome}" action="#{bolaoController.selecionarGrupoUsuario(linha_grupo_usuariox)}" styleClass="btn btn-success btn-block"/>
+                            <br />
+                        </h:panelGroup>
+                    </ui:repeat>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="row" rendered="#{bolaoController.grupoUsuarioSelecionado.id ne -1}">
+                    <div class="col-xs-12 col-sm-12">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <h3>#{bolaoController.grupoUsuarioSelecionado.grupo.nome}</h3>
+                            </div>
+
+                        </div>
+
+                        <h:panelGroup layout="block" styleClass="row" rendered="#{bolaoController.grupoUsuarioSelecionado.administrador == true}">
+                            <div class="col-xs-12">
+                                <hr />
+                            </div>
+
+                            <div class="col-xs-6 col-sm-4">
+                                <h:commandButton styleClass="btn btn-success btn-block btn-sm" value="Adicionar Jogadores">
+                                    <f:ajax event="click" render="form_ranking:panel_adicionar_usuario_grupo" listener="#{usuarioController.loadListaUsuarioAdicionarGrupo(bolaoController.grupoUsuarioSelecionado.grupo)}" />
+                                    <f:passThroughAttribute name="data-toggle" value="modal"/>
+                                    <f:passThroughAttribute name="data-target" value="#modal_adicionar_usuario_grupo"/>
+                                </h:commandButton>
+                            </div>
+
+                            <div class="col-xs-6 col-sm-4">
+                                <h:commandButton styleClass="btn btn-success btn-block btn-sm" value="Novo Bolão para este Grupo" action="#{bolaoController.novoBolao(bolaoController.grupoUsuarioSelecionado.grupo.id)}"/>
+                            </div>
+                        </h:panelGroup>
+                        <hr />
+
+                        <label style="text-decoration: underline"><b>CLASSIFICAÇÃO GERAL</b></label>
+                        <h:panelGroup id="tbl_ranking_geral" layout="block">
+                            <h:dataTable value="#{bolaoController.listaUsuarioRankingGeral}" var="linha_usuario_ranking_geral" styleClass="table table-striped">
+                                <h:column>
+                                    <f:facet name="header">#</f:facet>
+                                        #{linha_usuario_ranking_geral.posicaoAtual}
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">Nome</f:facet>
+                                    <h:outputText value="#{linha_usuario_ranking_geral.usuario.apelido eq '' ? linha_usuario_ranking_geral.usuario.nome : linha_usuario_ranking_geral.usuario.apelido}" style="#{linha_usuario_ranking_geral.usuario.id eq usuarioController.usuario.id ? 'font-weight: bold; font-size: 11pt' : ''}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">
+                                        <f:verbatim><div style="text-align: center">Jogos</div></f:verbatim>
+                                    </f:facet>
+                                    <div style="text-align: center">
+                                        <h:outputText value="#{linha_usuario_ranking_geral.quantidadePalpites}" style="#{linha_usuario_ranking_geral.usuario.id eq usuarioController.usuario.id ? 'font-weight: bold' : ''}"/>
+                                    </div>
+                                </h:column>
+
+                                <h:column>
+                                    <f:facet name="header">
+                                        <f:verbatim><div style="text-align: center">Pontos</div></f:verbatim>
+                                    </f:facet>
+                                    <div style="text-align: center">
+                                        <h:outputText value="#{linha_usuario_ranking_geral.pontuacaoAtual}" style="#{linha_usuario_ranking_geral.usuario.id eq usuarioController.usuario.id ? 'font-weight: bold' : ''}"/>
+                                    </div>
+                                </h:column>
+
+                                <h:column>
+                                    <h:graphicImage value="/resources/images/manteve.png" alt="MANTEVE" style="width: 15px; margin-left: 15px" rendered="#{linha_usuario_ranking_geral.variacao eq 0}" title="Mesma Posição"/>
+                                    <h:graphicImage value="/resources/images/subiu.png" alt="SUBIU" style="width: 15px; margin-left: 15px" rendered="#{linha_usuario_ranking_geral.variacao gt 0}" title="Subiu Posições"/>
+                                    <h:graphicImage value="/resources/images/desceu.png" alt="DESCEU" style="width: 15px; margin-left: 15px" rendered="#{linha_usuario_ranking_geral.variacao lt 0}" title="Desceu Posições"/>
+                                    <h:outputText value="#{linha_usuario_ranking_geral.variacao gt 0 ? ' +'.concat(linha_usuario_ranking_geral.variacao) : ' '.concat(linha_usuario_ranking_geral.variacao)}" rendered="#{linha_usuario_ranking_geral.variacao ne 0}"/>
+                                </h:column>
+                            </h:dataTable>
+                        </h:panelGroup>
+
+                        <hr />
+
+                        <h:outputLabel style="text-decoration: underline" rendered="#{bolaoController.listaBolao.size() ne 0}"><b>MEUS BOLÕES</b></h:outputLabel>
+
+                        <ui:repeat value="#{bolaoController.listaBolao}" var="linha_bolaox">
+                            <h:panelGroup layout="block" class="panel panel-success panel-shadow" style="background: #f2f2f2;" rendered="#{linha_bolaox.finalizado eq false}">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h6 style="color: green"><b>Em Andamento</b></h6>
+                                            <h4>
+                                                <h:commandLink value="#{linha_bolaox.nome}" action="#{bolaoController.editarBolao(linha_bolaox.id)}" rendered="#{bolaoController.grupoUsuarioSelecionado.administrador eq true}"/>
+                                                <h:outputText value="#{linha_bolaox.nome}" rendered="#{bolaoController.grupoUsuarioSelecionado.administrador eq false}"/>
+                                                <h:commandButton value="EDITAR" action="#{bolaoController.editarBolao(linha_bolaox.id)}" styleClass="btn btn-primary btn-xs" style="margin-left: 10px" rendered="#{bolaoController.grupoUsuarioSelecionado.administrador eq true}"/>
+
+                                                <h:commandButton value="JOGAR ESTE BOLÃO" styleClass="btn btn-success btn-xs" style="margin-left: 10px">
+                                                    <f:ajax event="click" render="form_ranking:panel_ver_pontuacao_bolao" listener="#{bolaoController.loadListaUsuarioPontuacaoBolao(linha_bolaox.id)}" />
+                                                    <f:passThroughAttribute name="data-toggle" value="modal"/>
+                                                    <f:passThroughAttribute name="data-target" value="#modal_ver_pontuacao_bolao"/>
+                                                </h:commandButton>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+
+                            <h:panelGroup layout="block" class="panel panel-danger panel-shadow" style="" rendered="#{linha_bolaox.finalizado eq true}">
+                                <div class="panel-body">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h6 style="color: red"><b>Finalizado</b></h6>
+                                            <h4>
+                                                <h:outputText value="#{linha_bolaox.nome}" />
+                                                <h:commandButton value="VER PONTUAÇÃO" styleClass="btn btn-warning btn-xs" style="margin-left: 10px">
+                                                    <f:ajax event="click" render="form_ranking:panel_ver_pontuacao_bolao" listener="#{bolaoController.loadListaUsuarioPontuacaoBolao(linha_bolaox.id)}" />
+                                                    <f:passThroughAttribute name="data-toggle" value="modal"/>
+                                                    <f:passThroughAttribute name="data-target" value="#modal_ver_pontuacao_bolao"/>
+                                                </h:commandButton>
+                                            </h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                        </ui:repeat>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" rendered="#{bolaoController.listaGrupoUsuario.size() ne 0 and bolaoController.grupoUsuarioSelecionado.id ne -1}" styleClass="row">
+                    <div class="col-xs-12">
+                        <h4><h:outputLabel value="Outros Grupos" /></h4>
+                    </div>
+                    <ui:repeat value="#{bolaoController.listaGrupoUsuario}" var="linha_grupo_usuariox">
+                        <h:panelGroup layout="block" rendered="#{linha_grupo_usuariox.grupo.id ne bolaoController.grupoUsuarioSelecionado.grupo.id}" styleClass="col-xs-12 col-sm-4">
+                            <h:commandLink value="#{linha_grupo_usuariox.grupo.nome}" action="#{bolaoController.selecionarGrupoUsuario(linha_grupo_usuariox)}" styleClass="btn btn-success btn-block" onclick="loadStatusFixed()"/>
+                            <br />
+                        </h:panelGroup>
+                    </ui:repeat>
+                </h:panelGroup>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modal_adicionar_usuario_grupo" tabindex="-1" role="dialog" aria-labelledby="myModalAdicionarUsuarioGrupo">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" data-toggle="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalAdicionarUsuarioGrupo">Adicionar Jogador</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <h:panelGroup id="panel_adicionar_usuario_grupo" layout="block">
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <h:dataTable id="table_usuario" value="#{usuarioController.listaUsuarioAdicionarGrupo}" var="linha_usuario_grupo" styleClass="table table-striped">
+                                                <h:column>
+                                                    <f:facet name="header">Nome</f:facet>
+                                                    <h:outputLabel value="#{linha_usuario_grupo[1]}" />
+                                                </h:column>
+
+                                                <h:column>
+                                                    <div style="text-align: right">
+                                                        <h:commandLink value="Adicionar" styleClass="btn btn-success btn-xs" rendered="#{linha_usuario_grupo[2] eq 'adicionar'}">
+                                                            <f:ajax event="action" render=":form_ranking:panel_adicionar_usuario_grupo :form_ranking:tbl_ranking_geral" listener="#{usuarioController.salvarAdicionarUsuarioGrupo(linha_usuario_grupo[0])}"/>
+                                                        </h:commandLink>
+
+                                                        <h:commandLink value="Remover" styleClass="btn btn-danger btn-xs" rendered="#{linha_usuario_grupo[2] eq 'remover'}">
+                                                            <f:ajax event="action" render=":form_ranking:panel_adicionar_usuario_grupo :form_ranking:tbl_ranking_geral" listener="#{usuarioController.excluirAdicionarUsuarioGrupo(linha_usuario_grupo[0])}"/>
+                                                        </h:commandLink>
+                                                    </div>
+                                                </h:column>
+                                            </h:dataTable>    
+                                        </div>
+                                    </div>
+
+                                </h:panelGroup>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>  
+
+                <div class="modal fade" id="modal_ver_pontuacao_bolao" tabindex="-1" role="dialog" aria-labelledby="myModalVerPontuacaoBolao">
+                    <div class="modal-dialog" role="document">
+                        <h:panelGroup id="panel_ver_pontuacao_bolao" layout="block" styleClass="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" data-toggle="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalVerPontuacaoBolao">#{bolaoController.bolao.nome}</h4>
+                            </div>
+
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h:dataTable value="#{bolaoController.listaUsuarioRankingBolao}" var="linha_usuario_ranking_bolao" styleClass="table table-striped">
+                                            <h:column>
+                                                #{linha_usuario_ranking_bolao.posicao}
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">Nome</f:facet>
+                                                <h:outputText value="#{linha_usuario_ranking_bolao.usuario.apelido eq '' ? linha_usuario_ranking_bolao.usuario.nome : linha_usuario_ranking_bolao.usuario.apelido}" style="#{linha_usuario_ranking_bolao.usuario.id eq usuarioController.usuario.id ? 'font-weight: bold; font-size: 11pt' : ''}"/>
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <f:verbatim><div style="text-align: center">Jogos</div></f:verbatim>
+                                                </f:facet>
+                                                <div style="text-align: center">
+                                                    <h:outputText value="#{linha_usuario_ranking_bolao.quantidadePalpites}" style="#{linha_usuario_ranking_bolao.usuario.id eq usuarioController.usuario.id ? 'font-weight: bold' : ''}"/>
+                                                </div>
+                                            </h:column>
+
+                                            <h:column>
+                                                <f:facet name="header">
+                                                    <f:verbatim><div style="text-align: center">Pontos</div></f:verbatim>
+                                                </f:facet>
+                                                <div style="text-align: center">
+                                                    <h:outputText value="#{linha_usuario_ranking_bolao.pontuacao}" style="#{linha_usuario_ranking_bolao.usuario.id eq usuarioController.usuario.id ? 'font-weight: bold' : ''}"/>
+                                                </div>
+                                            </h:column>
+                                        </h:dataTable>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <ui:repeat value="#{bolaoController.listaPalpiteStatus}" var="linha_palpite_statusx"> 
+                                            <div class="panel panel-success panel-shadow" style="background: #f2f2f2;">
+                                                <div class="panel-body">
+                                                    <div class="row">
+                                                        <div class="col-xs-12 text-center">
+                                                            <label>#{linha_palpite_statusx.palpite.jogo.local}</label><br />
+                                                            <label>#{linha_palpite_statusx.palpite.jogo.dataJogoString} - #{linha_palpite_statusx.palpite.jogo.dataJogoStringDia} às #{linha_palpite_statusx.palpite.jogo.horaJogo}  <h:outputText value="x#{linha_palpite_statusx.palpite.jogo.importancia}" rendered="#{linha_palpite_statusx.palpite.jogo.importancia ne 1}" style="font-weight: bold"/></label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row vertical-align">
+                                                        <div class="col-xs-5">
+                                                            <div class="row vertical-align">
+                                                                <div class="col-xs-4">
+                                                                    <h:graphicImage value="resources/images/times/#{linha_palpite_statusx.palpite.jogo.time1.logo}" style="width: 20px; float: left" />
+                                                                </div>
+                                                                <div class="col-xs-4 no-padding">
+                                                                    <label style="font-weight: bold; float: left">#{linha_palpite_statusx.palpite.jogo.time1.sigla}</label>
+                                                                </div>
+                                                                <div class="col-xs-4 no-padding">
+                                                                    <h:inputText value="#{linha_palpite_statusx.palpite.placarTime1}" styleClass="form-control" style="font-size: 13pt; text-align: center; font-weight: bold; float: left" disabled="#{linha_palpite_statusx.status ne ''}">
+                                                                        <f:ajax event="change" render="@this" />
+                                                                        <f:passThroughAttribute name="type" value="number" />
+                                                                    </h:inputText>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-xs-2 text-center no-padding">
+                                                            <label><b>X</b></label>
+                                                        </div>
+
+                                                        <div class="col-xs-5">
+                                                            <div class="row  vertical-align">
+                                                                <div class="col-xs-4 no-padding">
+                                                                    <h:inputText value="#{linha_palpite_statusx.palpite.placarTime2}" styleClass="form-control" style="font-size: 13pt; text-align: center; font-weight: bold; float: right" disabled="#{linha_palpite_statusx.status ne ''}">
+                                                                        <f:ajax event="change" render="@this" />
+                                                                        <f:passThroughAttribute name="type" value="number" />
+                                                                    </h:inputText>
+                                                                </div>
+                                                                <div class="col-xs-4 no-padding">
+                                                                    <label style="font-weight: bold; float: right">#{linha_palpite_statusx.palpite.jogo.time2.sigla}</label>
+                                                                </div>
+                                                                <div class="col-xs-4">
+                                                                    <h:graphicImage value="resources/images/times/#{linha_palpite_statusx.palpite.jogo.time2.logo}" style="width: 20px; float: right" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <h:panelGroup layout="block" styleClass="row" rendered="#{linha_palpite_statusx.status ne ''}">
+                                                        <div class="col-xs-12 text-center">
+                                                            <h5 style="color: red">#{linha_palpite_statusx.status}</h5>
+                                                        </div>
+                                                    </h:panelGroup>
+                                                </div>
+                                            </div>
+                                        </ui:repeat>
+
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <h:messages showDetail="true" class="alert #{mensagemFlash.ALERT}">
+                                                    <f:passThroughAttribute name="role" value="alert" />
+                                                </h:messages>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <h:commandButton id="btn_salvar_apostax" styleClass="btn btn-primary" value="SALVAR APOSTA" rendered="#{bolaoController.bolao.finalizado eq false and bolaoController.listaPalpiteStatus.size() ne 0}" onclick="click_salvando_aposta(this)">
+                                    <f:ajax event="action" render="@this :form_ranking:tbl_ranking_geral panel_ver_pontuacao_bolao" listener="#{bolaoController.salvarPalpites()}" />
+                                </h:commandButton>
+
+                                <h:outputLabel value="NENHUM JOGO ADICIONADO" rendered="#{bolaoController.listaPalpiteStatus.size() eq 0}"/>                                        
+                                <button type="button" class="btn btn-default" data-dismiss="modal">FECHAR</button>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                </div>    
+            </h:form>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="templates/footer.xhtml"/>
+    </f:subview>
+</ui:component>
+

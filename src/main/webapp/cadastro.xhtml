@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Me Cadastrar</title>
+    </h:head>
+
+    <f:subview id="header">
+        <ui:include src="templates/header_login.xhtml"/>
+        <f:event type="preRenderView" listener="#{usuarioController.loadPaginaCadastro}"/>
+    </f:subview>
+
+    <h:body>
+        <div class="container">
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>CADASTRO</h3>
+                    <hr />
+                </div>
+            </div>
+
+            <h:form id="form_cadastro" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h:messages id="message_bolao" showDetail="true" class="alert #{mensagemFlash.ALERT}">
+                            <f:passThroughAttribute name="role" value="alert" />
+                        </h:messages>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="form-group">
+                            <h:graphicImage value="#{usuarioController.usuario.caminhoFoto}" alt="FOTO DA PESSOA" styleClass="img-responsive center-block"/>
+
+                            <h:outputLabel for="input_upload_foto" styleClass="btn btn-default btn-block" value="Selecionar Foto">
+                                <h:inputFile id="input_upload_foto" value="#{usuarioController.arquivo}" style="display: none">
+                                    <f:ajax execute="@this" render="@form" listener="#{usuarioController.upload}"/>
+                                    <f:passThroughAttribute name="type" value="file" />
+                                    <f:passThroughAttribute name="accept" value="image/*" />
+                                </h:inputFile>
+                            </h:outputLabel>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-12 col-sm-8">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="input_nome">Nome</label>
+                                    <h:inputText id="input_nome" value="#{usuarioController.usuario.nome}" styleClass="form-control">
+                                        <f:ajax event="change" render="@this" />
+                                        <f:passThroughAttribute name="placeholder" value="NOME" />
+                                    </h:inputText>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="input_apelido">Apelido</label>
+                                    <h:inputText id="input_apelido" value="#{usuarioController.usuario.apelido}" styleClass="form-control">
+                                        <f:ajax event="change" render="@this" />
+                                        <f:passThroughAttribute name="placeholder" value="COMO QUERO SER CHAMADO" />
+                                    </h:inputText>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label for="input_email">EMAIL</label>
+                                    <h:inputText id="input_email" value="#{usuarioController.usuario.email}" styleClass="form-control">
+                                        <f:ajax event="change" render="@this" />
+                                        <f:passThroughAttribute name="placeholder" value="EMAIL PARA CADASTRAR" />
+                                    </h:inputText>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label for="input_senha">Senha</label>
+                                    <h:inputSecret id="input_senha" value="#{usuarioController.usuario.senha}" styleClass="form-control" redisplay="true">
+                                        <f:ajax event="change" render="@this" />
+                                        <f:passThroughAttribute name="placeholder" value="DIGITE A SENHA" />
+                                    </h:inputSecret>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-6">
+                                <div class="form-group">
+                                    <label for="input_senha">Confirme a Senha</label>
+                                    <h:inputSecret id="input_confirme_senha" value="#{usuarioController.confirmeSenha}" styleClass="form-control" redisplay="true">
+                                        <f:ajax event="change" render="@this" />
+                                        <f:passThroughAttribute name="placeholder" value="CONFIRME A SENHA" />
+                                    </h:inputSecret>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-3">
+                                <h:commandButton styleClass="btn btn-warning btn-block" value="ME CADASTRAR" action="#{usuarioController.salvarUsuario()}"  onclick="loadStatusFixed()"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="templates/footer.xhtml"/>
+    </f:subview>
+</html>
+

@@ -1,0 +1,324 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:h="http://xmlns.jcp.org/jsf/html"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Editar Bolão</title>
+    </h:head>
+
+    <f:subview id="header">
+        <ui:include src="templates/header.xhtml"/>
+    </f:subview>
+
+    <h:body>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>EDITAR BOLÃO</h3>
+                    <hr />
+                </div>
+            </div>
+
+            <h:form id="form_bolao">
+                <h:outputScript>load_masks();</h:outputScript>
+                <div class="panel panel-default panel-shadow" style="background: #f2f2f2;">
+                    <div class="panel" style="background: #f2f2f2; padding: 10px">
+                        <h2><b>Dados do Bolão</b></h2>    
+                        <hr />
+
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h:messages id="message_bolao" showDetail="true" class="alert #{mensagemFlash.ALERT}">
+                                    <f:passThroughAttribute name="role" value="alert" />
+                                </h:messages>
+                            </div>
+
+                            <div class="col-xs-12">
+                                <div class="form-group">
+                                    <label for="input_nome">Nome</label>
+                                    <h:inputText id="input_nome" value="#{bolaoController.bolao.nome}" styleClass="form-control" disabled="#{bolaoController.bolao.finalizado}">
+                                        <f:ajax event="change" render="@this" />
+                                        <f:passThroughAttribute name="placeholder" value="APELIDO DO BOLÃO" />
+                                    </h:inputText>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <h:commandButton styleClass="btn btn-primary btn-block" value="#{bolaoController.bolao.id eq -1 ? 'Salvar' : 'Alterar'}" disabled="#{bolaoController.bolao.finalizado}">
+                                    <f:ajax event="action" render="@form" listener="#{bolaoController.salvarBolao()}"/>
+                                </h:commandButton>
+                            </div>
+
+                            <div class="col-xs-4">
+                                <h:commandButton styleClass="btn btn-primary btn-block" value="Finalizar" disabled="#{bolaoController.bolao.id eq -1 or bolaoController.bolao.finalizado}">
+                                    <f:ajax event="action" render="@form" listener="#{bolaoController.finalizarBolao()}"/>
+                                </h:commandButton>
+                            </div>
+
+                            <div class="col-xs-4">
+                                <h:commandButton styleClass="btn btn-danger btn-block" value="Excluir" disabled="#{bolaoController.bolao.id eq -1 or bolaoController.bolao.finalizado}">
+                                    <f:ajax event="action" render="@form" listener="#{bolaoController.excluirBolao()}"/>
+                                </h:commandButton>
+                            </div>
+                            <hr />
+                        </div>
+                    </div>
+                </div>
+
+                <h:panelGroup layout="block" styleClass="panel panel-default panel-shadow" style="padding: 10px" rendered="#{bolaoController.bolao.id ne -1}">
+                    <h2><b>Criar Partida</b></h2>
+                    <hr />
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="form-group">
+                                <label for="input_local_partida">Local da Partida</label>
+                                <h:inputText id="input_local_partida" value="#{bolaoController.jogo.local}" styleClass="form-control">
+                                    <f:ajax event="change" render="@this" />
+                                    <f:passThroughAttribute name="placeholder" value="LOCAL DA PARTIDA" />
+                                </h:inputText>
+                            </div>
+                        </div>
+
+                        <div class="col-xs-12">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <div class="form-group">
+                                        <label for="input_data_partida">Data</label>
+                                        <h:inputText id="input_data_partida" value="#{bolaoController.jogo.dataJogoString}" styleClass="form-control mask_data" style="text-align: center" maxlength="10">
+                                            <f:ajax event="blur" render="@this panel_dia_semana" />
+                                            <f:passThroughAttribute name="placeholder" value="01/01/2000" />
+                                        </h:inputText>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-4">
+                                    <div class="form-group">
+                                        <label for="input_hora_partida">Hora</label>
+                                        <h:inputText id="input_hora_partida" value="#{bolaoController.jogo.horaJogo}" styleClass="form-control mask_hora" style="text-align: center" maxlength="5">
+                                            <f:ajax event="blur" render="@this" />
+                                            <f:passThroughAttribute name="placeholder" value="12:00" />
+                                        </h:inputText>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-3">
+                                    <div class="form-group">
+                                        <label for="input_importancia">Vezes</label>
+                                        <h:inputText id="input_importancia" value="#{bolaoController.jogo.importancia}" styleClass="form-control" style="text-align: center" maxlength="1">
+                                            <f:ajax event="change" render="@this" />
+                                            <f:passThroughAttribute name="placeholder" value="x2" />
+                                        </h:inputText>
+                                    </div>
+                                </div>
+
+                                <h:panelGroup id="panel_dia_semana" layout="block" styleClass="col-xs-12">
+                                    <h:panelGroup styleClass="form-group" rendered="#{not empty bolaoController.jogo.dataJogoString}">
+                                        <label for="input_data_partida">Dia</label><br />
+                                        <h4><h:outputText value="#{bolaoController.jogo.dataJogoStringDia}" /></h4>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+
+                        <h:panelGroup id="panel_time" layout="block" class="col-xs-12">
+                            <hr />
+                            <div class="row vertical-align">
+                                <div class="col-xs-5">
+                                    <div class="form-group">
+                                        <label for="input_time1">Time 1</label>
+                                        <h:inputText id="input_time1" value="#{bolaoController.pesquisaTime1}" styleClass="form-control" rendered="#{bolaoController.jogo.time1.id eq -1}">
+                                            <f:ajax event="keyup" listener="#{bolaoController.loadPesquisaTime(1)}" render="panel_lista_time" />
+                                            <f:passThroughAttribute name="placeholder" value="NOME DO TIME" />
+                                        </h:inputText>
+
+                                        <h:panelGroup layout="block" styleClass="row" rendered="#{bolaoController.jogo.time1.id ne -1}">
+                                            <div class="col-xs-12">
+                                                <div class="row vertical-align">
+                                                    <div class="col-xs-4 col-sm-2">
+                                                        <h:graphicImage value="resources/images/times/#{bolaoController.jogo.time1.logo}" style="width: 40px"/>
+                                                    </div>
+
+                                                    <div class="col-xs-8 col-sm-3">
+                                                        <h:outputLabel value="#{bolaoController.jogo.time1.sigla}" style="font-size: 20pt; font-weight: bold"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <h:commandButton class="btn btn-xs btn-danger btn-block" value="Remover Time" disabled="#{bolaoController.jogo.id ne -1}">
+                                                            <f:ajax event="click" listener="#{bolaoController.selecionarOutroTime(1)}" render="panel_time" />
+                                                        </h:commandButton>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-2 text-center">
+                                    <h:outputLabel value="X" style="font-weight: bold"/>
+                                </div>
+
+                                <div class="col-xs-5">
+                                    <div class="form-group">
+                                        <label for="input_time2">Time 2</label>
+                                        <h:inputText id="input_time2" value="#{bolaoController.pesquisaTime2}" styleClass="form-control" rendered="#{bolaoController.jogo.time2.id eq -1}">
+                                            <f:ajax event="keyup" listener="#{bolaoController.loadPesquisaTime(2)}" render="panel_lista_time" />
+                                            <f:passThroughAttribute name="placeholder" value="NOME DO TIME" />
+                                        </h:inputText>
+
+                                        <h:panelGroup layout="block" styleClass="row" rendered="#{bolaoController.jogo.time2.id ne -1}">
+                                            <div class="col-xs-12">
+                                                <div class="row vertical-align">
+                                                    <div class="col-xs-4 col-sm-2">
+                                                        <h:graphicImage value="resources/images/times/#{bolaoController.jogo.time2.logo}" style="width: 40px"/>
+                                                    </div>
+
+                                                    <div class="col-xs-8 col-sm-3">
+                                                        <h:outputLabel value="#{bolaoController.jogo.time2.sigla}" style="font-size: 20pt; font-weight: bold"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xs-12">
+                                                        <h:commandButton class="btn btn-xs btn-danger btn-block" value="Remover Time" disabled="#{bolaoController.jogo.id ne -1}">
+                                                            <f:ajax event="click" listener="#{bolaoController.selecionarOutroTime(2)}" render="panel_time" />
+                                                        </h:commandButton>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup id="panel_lista_time" layout="block" class="col-xs-12">
+                            <h:outputLabel value="Resultados" rendered="#{not empty bolaoController.pesquisaTime1 or not empty bolaoController.pesquisaTime2}"/>
+                            <ui:repeat value="#{bolaoController.listaPesquisaTime}" var="linha_pesquisa_time" rendered="#{not empty bolaoController.pesquisaTime1 or not empty bolaoController.pesquisaTime2}">
+                                <div class="row vertical-align">
+                                    <div class="col-xs-2">
+                                        <h:graphicImage value="resources/images/times/#{linha_pesquisa_time.logo}" style="width: 50px" />
+                                    </div>
+                                    <div class="col-xs-10">
+                                        <h:commandLink value="#{linha_pesquisa_time.nome}" style="font-size: 20pt">
+                                            <f:ajax event="action" listener="#{bolaoController.selecionarTime(linha_pesquisa_time)}" render="form_bolao:panel_time form_bolao:panel_lista_time" />
+                                        </h:commandLink>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </h:panelGroup>
+
+                        <div style="clear: both" />
+                        <br />
+
+                        <div class="col-xs-12">
+                            <h:commandButton styleClass="btn btn-primary btn-block" value="#{bolaoController.jogo.id eq -1 ? 'Salvar Partida' : 'Alterar Partida'}" type="button" action="#{bolaoController.adicionarJogo}" disabled="#{bolaoController.bolao.finalizado eq true}">
+                                <f:ajax event="action" render="@form"/>
+                            </h:commandButton>
+                        </div>
+                    </div>
+                </h:panelGroup>
+
+                <h:panelGroup layout="block" styleClass="panel panel-default panel-shadow" style="padding: 10px" rendered="#{bolaoController.bolao.id ne -1}">
+                    <h2><b>Lista de Partidas</b></h2>    
+                    <hr />
+
+                    <h:outputLabel value="Nenhum Adicionado!" rendered="#{empty bolaoController.listaJogo}"/>
+
+                    <ui:repeat value="#{bolaoController.listaJogo}" var="linha_bolao_jogo">
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <h4><h:commandLink value="#{linha_bolao_jogo.local}" action="#{bolaoController.editarJogo(linha_bolao_jogo)}" disabled="#{linha_bolao_jogo.dataJogoFinalString ne ''}" /></h4>
+                                <h6>#{linha_bolao_jogo.dataJogoString} - #{linha_bolao_jogo.dataJogoStringDia} às #{linha_bolao_jogo.horaJogo} <h:outputText value="x#{linha_bolao_jogo.importancia}" rendered="#{linha_bolao_jogo.importancia ne 1}" style="font-weight: bold"/></h6>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 text-center">
+                                <h6><b>Placar do Jogo</b></h6>
+                            </div>
+                        </div>
+
+                        <div class="row vertical-align">
+                            <div class="col-xs-5">
+                                <div class="row  vertical-align">
+                                    <div class="col-xs-4">
+                                        <h:graphicImage value="resources/images/times/#{linha_bolao_jogo.time1.logo}" style="width: 30px; float: left" />
+                                    </div>
+                                    <div class="col-xs-4 no-padding">
+                                        <label style="font-size: 12pt; font-weight: bold; float: left">#{linha_bolao_jogo.time1.sigla}</label>
+                                    </div>
+                                    <div class="col-xs-4 no-padding">
+                                        <h:inputText value="#{linha_bolao_jogo.placarTime1}" styleClass="form-control" style="text-align: center; font-size: 13pt; font-weight: bold; float: left" disabled="#{linha_bolao_jogo.dataJogoFinalString ne ''}">
+                                            <f:ajax event="change" render="@this" />
+                                            <f:passThroughAttribute name="type" value="number" />
+                                        </h:inputText>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-xs-2 text-center no-padding">
+                                <label><b>X</b></label>
+                            </div>
+
+                            <div class="col-xs-5">
+                                <div class="row  vertical-align">
+                                    <div class="col-xs-4 no-padding">
+                                        <h:inputText value="#{linha_bolao_jogo.placarTime2}" styleClass="form-control" style="text-align: center; font-size: 13pt; font-weight: bold; float: right" disabled="#{linha_bolao_jogo.dataJogoFinalString ne ''}">
+                                            <f:ajax event="change" render="@this" />
+                                            <f:passThroughAttribute name="type" value="number" />
+                                        </h:inputText>
+                                    </div>
+                                    <div class="col-xs-4 no-padding">
+                                        <label style="font-size: 12pt; font-weight: bold; float: right">#{linha_bolao_jogo.time2.sigla}</label>
+                                    </div>
+                                    <div class="col-xs-4">
+                                        <h:graphicImage value="resources/images/times/#{linha_bolao_jogo.time2.logo}" style="width: 30px; float: right" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h:panelGroup styleClass="row" rendered="#{linha_bolao_jogo.dataJogoFinalString eq ''}">
+                            <div class="col-xs-4">
+                                <h:commandButton styleClass="btn btn-info btn-block" value="Alterar" type="button" action="#{bolaoController.alterarJogo(linha_bolao_jogo)}" disabled="#{bolaoController.bolao.finalizado}">
+                                    <f:ajax event="action" render="@form"/>
+                                </h:commandButton>
+                            </div>
+
+                            <div class="col-xs-4">
+                                <h:commandButton styleClass="btn btn-danger btn-block" value="Excluir" type="button" action="#{bolaoController.excluirJogo(linha_bolao_jogo)}" disabled="#{bolaoController.bolao.finalizado}">
+                                    <f:ajax event="action" render="@form"/>
+                                </h:commandButton>
+                            </div>
+
+                            <div class="col-xs-4">
+                                <h:commandButton styleClass="btn btn-warning btn-block" value="Finalizar" type="button" action="#{bolaoController.finalizarJogo(linha_bolao_jogo)}" disabled="#{bolaoController.bolao.finalizado}">
+                                    <f:ajax event="action" render="@form"/>
+                                </h:commandButton>
+                            </div>
+                        </h:panelGroup>
+
+                        <h:panelGroup styleClass="row" rendered="#{linha_bolao_jogo.dataJogoFinalString ne ''}">
+                            <div class="col-xs-12 text-center">
+                                <h5 style="color: red">JOGO FINALIZADO</h5>
+                            </div>
+                        </h:panelGroup>
+                        <hr />
+                    </ui:repeat>
+                </h:panelGroup>
+            </h:form>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="templates/footer.xhtml"/>
+    </f:subview>
+</ui:component>
+

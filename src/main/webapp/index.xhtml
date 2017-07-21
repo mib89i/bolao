@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Login</title>
+    </h:head>
+
+    <f:subview id="header">
+        <ui:include src="templates/header_login.xhtml"/>
+    </f:subview>
+
+    <h:body>
+        <div class="container" style="margin: 0 auto; width: 300px; margin-top: 100px">
+            <h:panelGroup layout="block" styleClass="alert alert-danger" rendered="#{usuarioController.sessaoMessageLogin ne ''}">
+                #{usuarioController.sessaoMessageLogin}
+                <f:passThroughAttribute name="role" value="alert" />
+            </h:panelGroup>
+
+            <div class="row" style="margin-top: 150px; text-align:center; margin: 0 auto;">
+                <div>
+                    <h:form styleClass="">
+                        <h:inputText id="input_login" styleClass="form-control" value="#{usuarioController.usuario.email}">
+                            <f:passThroughAttribute name="placeholder" value="E-mail" />
+                            <f:passThroughAttribute name="autofocus" value="" />
+                        </h:inputText>
+                        <br />
+                        <h:inputSecret id="input_senha" styleClass="form-control" value="#{usuarioController.usuario.senha}">
+                            <f:passThroughAttribute name="placeholder" value="Senha" />
+                        </h:inputSecret>
+
+                        <h:messages id="message" showDetail="true" class="alert #{mensagemFlash.ALERT}">
+                            <f:passThroughAttribute name="role" value="alert" />
+                        </h:messages>
+                        <br />
+                        <h:commandButton value="ENTRAR" styleClass="btn btn-lg btn-primary btn-block btn-signin" action="#{usuarioController.entrar()}" onclick="loadStatusFixed()"/>
+                    </h:form>
+                    <br />
+                    <h:outputLink value="/bolao/cadastro.xhtml">Me Cadastrar</h:outputLink>
+                    
+                    <h:outputLink styleClass="forgot-password" value="/esqueci_minha_senha.xhtml" rendered="false">Esqueci minha Senha</h:outputLink>
+                </div>
+            </div>
+        </div>
+    </h:body>
+</html>
+

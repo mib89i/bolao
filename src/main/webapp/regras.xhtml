@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Regras</title>
+    </h:head>
+
+    <f:subview id="header">
+        <ui:include src="templates/header.xhtml"/>
+        <f:event type="preRenderView" listener="#{usuarioController.loadPaginaGrupo}"/>
+    </f:subview>
+
+    <h:body>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>REGRAS DO BOLÃO</h3>
+                    <hr />
+                </div>
+            </div>
+
+            <h:form id="form_regras">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4><b>PONTUAÇÃO</b></h4>
+                        <hr />
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-xs-12">
+                        <ui:repeat value="#{bolaoController.listaPontuacao}" var="linha_pontos">
+                            <label>#{linha_pontos.descricao}: #{linha_pontos.pontos}</label>
+                            <hr />
+                        </ui:repeat>
+                    </div>
+                </div>
+            </h:form>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="templates/footer.xhtml"/>
+    </f:subview>
+</html>
+

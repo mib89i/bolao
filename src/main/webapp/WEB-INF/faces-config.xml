@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>ranking</from-outcome>
+            <to-view-id>/ranking.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>bolao</from-outcome>
+            <to-view-id>/bolao.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>grupo</from-outcome>
+            <to-view-id>/grupo.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>cadastro</from-outcome>
+            <to-view-id>/cadastro.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>regras</from-outcome>
+            <to-view-id>/regras.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>  
+</faces-config>

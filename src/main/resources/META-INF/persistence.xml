@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="persistence" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>br.com.bolao.model.Usuario</class>
+    <class>br.com.bolao.model.Bolao</class>
+    <class>br.com.bolao.model.Grupo</class>
+    <class>br.com.bolao.model.GrupoUsuario</class>
+    <class>br.com.bolao.model.Jogo</class>
+    <class>br.com.bolao.model.Ranking</class>
+    <class>br.com.bolao.model.Time</class>
+    <class>br.com.bolao.model.Palpite</class>
+    <class>br.com.bolao.model.Pontuacao</class>
+    <class>br.com.bolao.model.TipoPalpite</class>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/teste3"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.password" value="989899"/>
+      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+    </properties>
+  </persistence-unit>
+</persistence>

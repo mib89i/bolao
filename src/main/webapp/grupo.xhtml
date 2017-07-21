@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:head>
+        <title>Meus Grupos</title>
+    </h:head>
+
+    <f:subview id="header">
+        <ui:include src="templates/header.xhtml"/>
+        <f:event type="preRenderView" listener="#{usuarioController.loadPaginaGrupo}"/>
+    </f:subview>
+
+    <h:body>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h3>MEUS GRUPOS</h3>
+                    <hr />
+                </div>
+            </div>
+
+            <h:form id="form_grupo">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h:messages id="message_bolao" showDetail="true" class="alert #{mensagemFlash.ALERT}">
+                            <f:passThroughAttribute name="role" value="alert" />
+                        </h:messages>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                        <div class="form-group">
+                            <h:inputText id="input_nome" value="#{usuarioController.grupo.nome}" styleClass="form-control">
+                                <f:ajax event="change" render="@this" />
+                                <f:passThroughAttribute name="placeholder" value="NOME DO GRUPO" />
+                            </h:inputText>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6 col-sm-2">
+                        <h:commandButton styleClass="btn btn-default btn-block" value="#{usuarioController.grupo.id eq -1 ? 'Salvar Grupo' : 'Alterar Grupo'}" type="button" action="#{usuarioController.salvarGrupo()}">
+                            <f:ajax event="action" render="@form"/>
+                        </h:commandButton>
+                    </div>
+
+                    <div class="col-xs-6 col-sm-2">
+                        <h:commandButton styleClass="btn btn-danger btn-block" value="Excluir Grupo" type="button" action="#{usuarioController.excluirGrupo()}" disabled="#{usuarioController.grupo.id eq -1}">
+                            <f:ajax event="action" render="@form"/>
+                        </h:commandButton>
+                    </div>
+                </div>
+                <h:dataTable value="#{usuarioController.listaGrupoUsuario}" var="linha_grupo_usuario" styleClass="table table-striped">
+                    <h:column>
+                        <f:facet name="header">Nome</f:facet>
+                        <h:commandLink value="#{linha_grupo_usuario.grupo.nome}" action="#{usuarioController.editarGrupo(linha_grupo_usuario)}" disabled="#{linha_grupo_usuario.administrador == false}"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Administrador</f:facet>
+                        <h:commandLink value="#{linha_grupo_usuario.administrador ? 'SIM' : 'NÃO'}" action="#{usuarioController.editarGrupo(linha_grupo_usuario)}" disabled="#{linha_grupo_usuario.administrador == false}"/>
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="templates/footer.xhtml"/>
+    </f:subview>
+</html>
+
